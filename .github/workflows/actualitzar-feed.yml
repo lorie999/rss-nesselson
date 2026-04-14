@@ -2,14 +2,12 @@ name: Actualitzar feed RSS
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # S'executa cada dia a les 8:00 AM
-  workflow_dispatch:     # Permet l'execució manual des de la pestanya Actions
+    - cron: '0 8 * * *'  # Cada dia a les 8:00 AM
+  workflow_dispatch:     # Permet l'execució manual
 
 jobs:
   generar-feed:
     runs-on: ubuntu-latest
-    
-    # Permisos necessaris per poder pujar el fitxer generat al repositori
     permissions:
       contents: write
 
@@ -32,17 +30,12 @@ jobs:
 
       - name: Guardar el feed actualitzat
         run: |
-          # Configuració de l'usuari bot de GitHub
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Afegim el fitxer generat (assegura't que el nom sigui correcte)
           git add nesselson.rss
-          
-          # Només fem commit i push si hi ha canvis reals en el fitxer
           if ! git diff --cached --quiet; then
             git commit -m "Feed actualitzat automàticament"
             git push
           else
-            echo "No s'han detectat canvis al feed. Saltant el push."
+            echo "No s'han detectat canvis al feed."
           fi
