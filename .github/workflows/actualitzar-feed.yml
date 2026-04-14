@@ -2,12 +2,13 @@ name: Actualitzar feed RSS
 
 on:
   schedule:
-    - cron: '0 8 * * *'
-  workflow_dispatch:
+    - cron: '0 8 * * *'  # S'executa cada dia a les 8:00 AM
+  workflow_dispatch:     # Permet l'execució manual
 
 jobs:
   generar-feed:
     runs-on: ubuntu-latest
+    
     permissions:
       contents: write
 
@@ -32,7 +33,9 @@ jobs:
         run: |
           git config --local user.name "github-actions[bot]"
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
           git add nesselson.rss
+          
           if ! git diff --cached --quiet; then
             git commit -m "Feed actualitzat automàticament"
             git push
