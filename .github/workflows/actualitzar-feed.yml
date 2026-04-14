@@ -1,0 +1,17 @@
+name: Actualitzar feed RSS
+
+on:
+  schedule:
+    - cron: '0 8 * * *'  # Cada dia a les 8h del matí
+  workflow_dispatch:       # També permet executar-lo manualment
+
+jobs:
+  generar-feed:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descarregar el repositori
+        uses: actions/checkout@v4
+
+      - name: Instal·lar Python
+        uses: actions/setup-pyt
