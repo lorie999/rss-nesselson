@@ -2,12 +2,16 @@ name: Actualitzar feed RSS
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Cada dia a les 8h del matí
-  workflow_dispatch:       # També permet executar-lo manualment
+    - cron: '0 8 * * *'  # S'executa cada dia a les 8:00 AM
+  workflow_dispatch:     # Permet l'execució manual des de la pestanya Actions
 
 jobs:
   generar-feed:
     runs-on: ubuntu-latest
+    
+    # Permisos necessaris per poder pujar el fitxer generat al repositori
+    permissions:
+      contents: write
 
     steps:
       - name: Descarregar el repositori
@@ -19,15 +23,26 @@ jobs:
           python-version: '3.11'
 
       - name: Instal·lar llibreries
-        run: pip install requests cloudscraper beautifulsoup4 feedgen
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests cloudscraper beautifulsoup4 feedgen
 
       - name: Executar el script
         run: python feed_nesselson.py
 
       - name: Guardar el feed actualitzat
         run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
+          # Configuració de l'usuari bot de GitHub
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Afegim el fitxer generat (assegura't que el nom sigui correcte)
           git add nesselson.rss
-          git commit -m "Feed actualitzat automàticament" || echo "Sense canvis"
-          git push
+          
+          # Només fem commit i push si hi ha canvis reals en el fitxer
+          if ! git diff --cached --quiet; then
+            git commit -m "Feed actualitzat automàticament"
+            git push
+          else
+            echo "No s'han detectat canvis al feed. Saltant el push."
+          fi
