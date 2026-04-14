@@ -2,8 +2,8 @@ name: Actualitzar feed RSS
 
 on:
   schedule:
-    - cron: '0 8 * * *'  # Cada dia a les 8:00 AM
-  workflow_dispatch:     # Permet l'execució manual
+    - cron: '0 8 * * *'
+  workflow_dispatch:
 
 jobs:
   generar-feed:
