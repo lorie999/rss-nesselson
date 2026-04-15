@@ -1,34 +1,33 @@
 name: Actualitzar feed RSS
+
 on:
   schedule:
-    - cron: '0 8 * * *'  # S'executa cada dia a les 8:00 AM
-  workflow_dispatch:     # Permet l'execució manual
+    - cron: '0 8 * * *'
+  workflow_dispatch:
+
 jobs:
   generar-feed:
-    runs-on: ubuntu-latest    
+    runs-on: ubuntu-latest
     permissions:
       contents: write
     steps:
-      - name: Descarregar el repositori
+      - name: Checkout
         uses: actions/checkout@v4
-      - name: Instal·lar Python
+
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+
       - name: Instal·lar llibreries
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests cloudscraper beautifulsoup4 feedgen
-      - name: Executar el script
+        run: pip install cloudscraper beautifulsoup4 feedgen
+
+      - name: Executar script
         run: python feed_nesselson.py
-      - name: Guardar el feed actualitzat
+
+      - name: Pujar feed
         run: |
-          git config --local user.name "github-actions[bot]"
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"          
-          git add nesselson.rss          
-          if ! git diff --cached --quiet; then
-            git commit -m "Feed actualitzat automàticament"
-            git push
-          else
-            echo "No s'han detectat canvis al feed."
-          fi
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add nesselson.rss
+          git diff --cached --quiet || git commit -m "Feed actualitzat" && git push
