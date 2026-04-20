@@ -1,6 +1,7 @@
 import cloudscraper
 from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
+import time
 
 # ---- CONFIGURACIÓ ----
 URL = "https://www.rogerebert.com/contributors/lisa-nesselson"
@@ -27,7 +28,7 @@ fg.description("Articles de Lisa Nesselson a RogerEbert.com")
 articles = sopa.find_all("article")
 
 if not articles:
-    print("⚠️ No s'han trobat articles. La web pot haver canviat l'estructura.")
+    print("⚠️ No s'han trobat articles.")
 else:
     print(f"Trobats {len(articles)} articles")
 
@@ -42,12 +43,10 @@ for article in articles:
         if link.startswith("/"):
             link = "https://www.rogerebert.com" + link
 
-        fe = fg.add_entry()
-        fe.title(titol)
-        fe.link(href=link)
-        fe.description(titol)
-        print(f"  → {titol[:60]}...")
+        # Entrem a cada article per buscar la imatge
+        imatge_url = ""
+        try:
+            resposta_article = scraper.get(link)
+            sopa_article = BeautifulSoup(resposta_article.text, "html.parser")
 
-# ---- GUARDEM EL FITXER ----
-fg.rss_file("nesselson.rss")
-print("\n✅ Feed guardat com a nesselson.rss")
+            # Busquem la imatge og:image (la
