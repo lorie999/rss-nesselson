@@ -3,32 +3,28 @@ from bs4 import BeautifulSoup
 from feedgen.feed import FeedGenerator
 import time
 
-# ---- CONFIGURACIÓ ----
 URL = "https://www.rogerebert.com/contributors/lisa-nesselson"
 
-# ---- DESCARREGUEM LA PÀGINA ----
-print("Descarregant la pàgina...")
+print("Descarregant la pagina...")
 scraper = cloudscraper.create_scraper()
 resposta = scraper.get(URL)
 
 if resposta.status_code != 200:
-    print(f"❌ Error: la web ha respost amb codi {resposta.status_code}")
+    print(f"Error: codi {resposta.status_code}")
     exit()
 
-print("✅ Pàgina descarregada correctament")
+print("Pagina descarregada correctament")
 sopa = BeautifulSoup(resposta.text, "html.parser")
 
-# ---- CREEM EL FEED ----
 fg = FeedGenerator()
 fg.title("Lisa Nesselson - RogerEbert.com")
 fg.link(href=URL)
 fg.description("Articles de Lisa Nesselson a RogerEbert.com")
 
-# ---- BUSQUEM ELS ARTICLES ----
 articles = sopa.find_all("article")
 
 if not articles:
-    print("⚠️ No s'han trobat articles.")
+    print("No s'han trobat articles.")
 else:
     print(f"Trobats {len(articles)} articles")
 
@@ -43,10 +39,6 @@ for article in articles:
         if link.startswith("/"):
             link = "https://www.rogerebert.com" + link
 
-        # Entrem a cada article per buscar la imatge
         imatge_url = ""
         try:
-            resposta_article = scraper.get(link)
-            sopa_article = BeautifulSoup(resposta_article.text, "html.parser")
-
-            # Busquem la imatge og:image (la
+            resposta_a
